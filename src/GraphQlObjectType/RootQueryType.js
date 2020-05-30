@@ -5,9 +5,9 @@ const { GraphQLObjectType,
     GraphQLList
 } = require('graphql');
 
-const course = require('../data/course.json');
-const student = require('../data/student.json');
-const grade = require('../data/grade.json');
+const courses = require('../data/course.json');
+const students = require('../data/student.json');
+const grades = require('../data/grade.json');
 
 const courseType = require('./course');
 const studentType = require('./students');
@@ -17,20 +17,50 @@ const RootQueryType = new GraphQLObjectType({
     name: 'Query',
     description: 'RootQuery',
     fields: () => ({
-        course: {
+        courses: {
             type: new GraphQLList(courseType),
             description: 'List of all courses',
-            resolve: () => course
+            resolve: () => courses
         },
-        student: {
+        students: {
             type: new GraphQLList(studentType),
             description: 'List of all students',
-            resolve: () => student
+            resolve: () => students
         },
-        grade: {
+        grades: {
             type: new GraphQLList(gradeType),
             description: 'List of all grade',
-            resolve: () => grade
+            resolve: () => grades
+        },
+        course: {
+            type: courseType,
+            description: 'Get a course',
+            args: {
+                id: {type: GraphQLInt}
+            },
+            resolve: (params, args) => {
+                return courses.find(course => course.id === args.id)
+            } 
+        },
+        student: {
+            type: studentType,
+            description: 'get a student',
+            args: {
+                id: {type: GraphQLInt}
+            },
+            resolve: (params, args) => {
+                return students.find(student => student.id === args.id)
+            }
+        },
+        grade: {
+            type: gradeType,
+            description: 'get a grade',
+            args: {
+                id: {type: GraphQLInt}
+            },
+            resolve: (params, args) => {
+                return grades.find(grade => grade.id === args.id)
+            }
         }
     })
 });
