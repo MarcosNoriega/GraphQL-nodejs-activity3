@@ -4,9 +4,11 @@ const express_graphql = require('express-graphql');
 const { GraphQLSchema } = require('graphql');
 
 const RootQueryType = require('./GraphQlObjectType/RootQueryType');
+const RootMutationType = require('./GraphQlObjectType/RootMutationType');
 
 const schema = new GraphQLSchema({
     query: RootQueryType,
+    mutation: RootMutationType
 });
 
 app.use('/graphql', express_graphql({
