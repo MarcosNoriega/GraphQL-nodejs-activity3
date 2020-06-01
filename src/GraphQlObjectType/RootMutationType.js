@@ -1,8 +1,10 @@
 const {GraphQLObjectType,
     GraphQLString,
     GraphQLNonNull,
-    GraphQLInt
+    GraphQLInt,
+    GraphQLError
 } = require('graphql');
+const _ = require('lodash');
 
 const courses = require('../data/course.json');
 const students = require('../data/student.json');
@@ -76,6 +78,57 @@ const RootMutationType = new GraphQLObjectType({
                 grades.push(grade);
 
                 return grade;
+            }
+        },
+        deleteGrade: {
+            type: gradeType,
+            description: 'delete a grade',
+            args: {
+                id: {type: GraphQLNonNull(GraphQLInt)}
+            },
+            resolve: (params, args) => {
+                let grade = _.remove(grades, grade => {
+                    return grade.id === args.id;
+                });
+
+                return grade[0];
+            }
+        },
+        deleteStudent: {
+            type: studentType,
+            description: 'delete a curse',
+            args: {
+                id: {type: GraphQLNonNull(GraphQLInt)}
+            },
+            resolve: (params, args) => {
+                let grade = grades.find(grade => grade.studentId === args.id);
+
+                if (grade) return new GraphQLError("no se puede");
+
+                let student = _.remove(students, student => {
+                    return student.id === args.id;
+                });
+
+                return student[0];
+            }
+        },
+        deleteCurse: {
+            type: courseType,
+            description: 'delete a course',
+            args: {
+                id: {type: GraphQLNonNull(GraphQLInt)}
+            },
+            resolve: (params, args) => {
+                let student = students.find(student => student.courseId === args.id);
+                let grade = grades.find(grade => grade.courseId === args.id);
+
+                if (grade || params) return new GraphQLError("no se puede");
+
+                let course = _.remove(courses, course => {
+                    return course.id === args.id;
+                });
+
+                return course[0];
             }
         }
     }
