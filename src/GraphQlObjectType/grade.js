@@ -3,8 +3,8 @@ const { GraphQLObjectType,
     GraphQLInt
 } = require('graphql');
 
-const course = require('../data/course.json');
-const student = require('../data/student.json');
+const courses = require('../data/course.json');
+const students = require('../data/student.json');
 
 const courseType = require('./course');
 const studentType = require('./students');
@@ -20,13 +20,13 @@ const gradeType = new GraphQLObjectType({
         course: {
             type: courseType,
             resolve: (grade) => {
-                return course.find(course => course.id === grade.courseId);
+                return courses.find(course => course.id === grade.courseId);
             }
         },
         student: {
             type: studentType,
             resolve: (grade) => {
-                return student.find(student => student.id === grade.studentId);
+                return students.find(student => student.id === grade.studentId);
             }
         }
     })

@@ -47,6 +47,10 @@ const RootMutationType = new GraphQLObjectType({
                 courseId: {type: GraphQLNonNull(GraphQLInt)}
             },
             resolve: (params, args) => {
+                let course = courses.find(course => course.id == args.courseId);
+
+                if (!course) return new GraphQLError('cannot be saved grade because the course not found');
+
                 const student = {
                     id: students.length + 1,
                     name: args.name,
@@ -68,6 +72,11 @@ const RootMutationType = new GraphQLObjectType({
                 grade: {type: GraphQLNonNull(GraphQLInt)}
             },
             resolve: (params, args) => {
+                let course = courses.find(course => course.id === args.courseId);
+                let student = students.find(student => student.id === args.studentId);
+
+                if (!course || !student) return new GraphQLError('cannot be saved grade because the course or the student not found');
+
                 const grade = {
                     id: grades.length + 1,
                     courseId: args.courseId,
@@ -103,7 +112,7 @@ const RootMutationType = new GraphQLObjectType({
             resolve: (params, args) => {
                 let grade = grades.find(grade => grade.studentId === args.id);
 
-                if (grade) return new GraphQLError("no se puede");
+                if (grade) return new GraphQLError("you cannot remove this course. Integrity problem in database");
 
                 let student = _.remove(students, student => {
                     return student.id === args.id;
@@ -112,7 +121,7 @@ const RootMutationType = new GraphQLObjectType({
                 return student[0];
             }
         },
-        deleteCurse: {
+        deleteCourse: {
             type: courseType,
             description: 'delete a course',
             args: {
@@ -122,7 +131,7 @@ const RootMutationType = new GraphQLObjectType({
                 let student = students.find(student => student.courseId === args.id);
                 let grade = grades.find(grade => grade.courseId === args.id);
 
-                if (grade || params) return new GraphQLError("no se puede");
+                if (grade || params) return new GraphQLError("you cannot remove this course. Integrity problem in database");
 
                 let course = _.remove(courses, course => {
                     return course.id === args.id;
